@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Dashboard – InvestRight</title>
+<meta name="description" content="AI-powered investment recommendations for Stocks, MF, Gold, Crypto & more in Hinglish.">
+<link rel="stylesheet" href="style.css">
+<style>
+.dashboard-hero {
+  background: linear-gradient(135deg, rgba(59,130,246,0.08) 0%, rgba(6,182,212,0.05) 100%);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 32px;
+  margin-bottom: 28px;
+  position: relative;
+  overflow: hidden;
+}
+.dashboard-hero::before {
+  content: '';
+  position: absolute; top: -50%; right: -10%;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(59,130,246,0.1) 0%, transparent 70%);
+  border-radius: 50%;
+}
+.hero-tag { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.pulse-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 0 0 rgba(16,185,129,0.5);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.5); }
+  70% { box-shadow: 0 0 0 8px rgba(16,185,129,0); }
+  100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
+}
+.hero-tag span { font-size: 12px; color: var(--green); font-weight: 600; font-family: var(--mono); }
+.dashboard-hero h2 { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 8px; }
+.dashboard-hero p { color: var(--text2); font-size: 14px; line-height: 1.6; max-width: 500px; }
+
+.ai-score-ring {
+  position: absolute; right: 32px; top: 50%; transform: translateY(-50%);
+}
+.score-circle {
+  width: 110px; height: 110px;
+  border-radius: 50%;
+  background: conic-gradient(var(--green) 0deg 270deg, var(--bg3) 270deg 360deg);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.score-inner {
+  width: 82px; height: 82px;
+  background: var(--bg2); border-radius: 50%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.score-num { font-size: 22px; font-weight: 800; color: var(--green); line-height: 1; font-family: var(--mono); }
+.score-label { font-size: 9px; color: var(--text3); font-weight: 500; margin-top: 2px; }
+
+/* RECOMMENDATION CARDS */
+.rec-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+.rec-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.rec-card.bullish::before { background: var(--green); }
+.rec-card.bearish::before { background: var(--red); }
+.rec-card.neutral::before { background: var(--gold); }
+.rec-card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,0,0,0.3); border-color: var(--border2); }
+
+.rec-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+.rec-asset { display: flex; align-items: center; gap: 10px; }
+.asset-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+}
+.asset-name { font-weight: 700; font-size: 15px; }
+.asset-type { font-size: 11px; color: var(--text3); margin-top: 2px; font-family: var(--mono); }
+
+.rec-signal { text-align: right; }
+.signal-label { font-size: 11px; font-weight: 700; font-family: var(--mono); letter-spacing: 1px; }
+.signal-label.buy { color: var(--green); }
+.signal-label.sell { color: var(--red); }
+.signal-label.hold { color: var(--gold); }
+.signal-conf { font-size: 10px; color: var(--text3); margin-top: 2px; }
+
+.rec-reason {
+  font-size: 13px; color: var(--text2); line-height: 1.55;
+  margin-bottom: 14px;
+  border-left: 2px solid var(--border2);
+  padding-left: 10px;
+}
+
+.rec-stats { display: flex; gap: 16px; }
+.stat { }
+.stat-val { font-family: var(--mono); font-size: 13px; font-weight: 600; }
+.stat-val.up { color: var(--green); }
+.stat-val.down { color: var(--red); }
+.stat-key { font-size: 10px; color: var(--text3); margin-top: 1px; }
+
+/* MARKET MOOD */
+.mood-bar {
+  height: 8px; border-radius: 4px;
+  background: linear-gradient(to right, var(--red) 0%, var(--gold) 50%, var(--green) 100%);
+  position: relative; margin: 12px 0;
+}
+.mood-needle {
+  position: absolute; top: -4px;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: white;
+  border: 2px solid var(--bg);
+  box-shadow: 0 0 8px rgba(0,0,0,0.5);
+  transform: translateX(-50%);
+  transition: left 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.mood-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--text3); font-family: var(--mono); }
+
+/* QUICK ACTIONS */
+.action-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.action-btn {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px 12px;
+  text-align: center; cursor: pointer; transition: all 0.2s;
+  text-decoration: none; color: var(--text);
+}
+.action-btn:hover { border-color: var(--border2); background: var(--bg3); transform: translateY(-2px); }
+.action-icon { font-size: 24px; margin-bottom: 6px; }
+.action-label { font-size: 12px; font-weight: 600; color: var(--text2); }
+
+/* AI LOADING STATE */
+.ai-thinking {
+  display: flex; align-items: center; gap: 8px;
+  color: var(--text2); font-size: 13px;
+}
+.thinking-dots span {
+  display: inline-block; width: 5px; height: 5px;
+  background: var(--blue); border-radius: 50%;
+  animation: blink 1.2s infinite;
+}
+.thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
+.thinking-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes blink { 0%,80%,100% { opacity: 0.2; } 40% { opacity: 1; } }
+
+.section-title {
+  font-size: 14px; font-weight: 700; color: var(--text2);
+  text-transform: uppercase; letter-spacing: 1px;
+  margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+.section-title::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+
+@media(max-width:768px) {
+  .ai-score-ring { display: none; }
+  .action-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+<nav id="main-nav"></nav>
+
+<div class="page">
+<div class="container">
+
+  <!-- HERO -->
+  <div class="dashboard-hero">
+    <div class="hero-tag">
+      <div class="pulse-dot"></div>
+      <span>LIVE AI ANALYSIS</span>
+    </div>
+    <h2>Aaj ka Investment Brief 🇮🇳</h2>
+    <p>AI ne aaj ke market conditions analyze karke aapke liye personalized recommendations taiyar kiye hain. Sensex, Nifty, Gold, Crypto — sab covered!</p>
+    <div class="ai-score-ring">
+      <div class="score-circle">
+        <div class="score-inner">
+          <span class="score-num">75</span>
+          <span class="score-label">AI SCORE</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUICK ACTIONS -->
+  <p class="section-title">Quick Access</p>
+  <div class="action-grid" style="margin-bottom:32px;">
+    <a href="market.html" class="action-btn">
+      <div class="action-icon">📈</div>
+      <div class="action-label">Markets</div>
+    </a>
+    <a href="portfolio.html" class="action-btn">
+      <div class="action-icon">💼</div>
+      <div class="action-label">Portfolio</div>
+    </a>
+    <a href="chat.html" class="action-btn">
+      <div class="action-icon">🤖</div>
+      <div class="action-label">AI Chat</div>
+    </a>
+    <a href="premium.html" class="action-btn">
+      <div class="action-icon">⭐</div>
+      <div class="action-label">Premium</div>
+    </a>
+  </div>
+
+  <!-- MARKET MOOD -->
+  <p class="section-title">Market Mood Meter</p>
+  <div class="card" style="margin-bottom:28px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <span style="font-size:15px;font-weight:700;">Market Sentiment Today</span>
+      <span class="badge badge-green">MODERATELY BULLISH</span>
+    </div>
+    <div class="mood-bar">
+      <div class="mood-needle" id="moodNeedle" style="left:72%"></div>
+    </div>
+    <div class="mood-labels">
+      <span>😱 Fear</span>
+      <span>😐 Neutral</span>
+      <span>🚀 Greed</span>
+    </div>
+    <p style="font-size:12px;color:var(--text2);margin-top:12px;">FII ne aaj net ₹1,240 Cr buy kiya. Domestic flows strong hain. Short-term bullish bias.</p>
+  </div>
+
+  <!-- AI RECOMMENDATIONS -->
+  <p class="section-title">AI Recommendations</p>
+  <div id="recGrid" class="grid-2" style="margin-bottom:32px;"></div>
+
+  <!-- DISCLAIMER -->
+  <div style="background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.2);border-radius:12px;padding:16px;margin-bottom:32px;">
+    <p style="font-size:12px;color:var(--text2);line-height:1.6;">
+      ⚠️ <strong style="color:var(--gold);">Disclaimer:</strong> Yeh AI-generated recommendations hain, financial advice nahi. Invest karne se pehle apna research zaroor karein. Past performance future returns guarantee nahi karta.
+    </p>
+  </div>
+
+</div>
+</div>
+
+<script src="nav.js"></script>
+<script>
+renderNav('dashboard');
+
+const recommendations = [
+  {
+    icon: '📊', name: 'Nifty 50 Index', type: 'INDEX FUND',
+    signal: 'BUY', conf: '84% confidence', sentiment: 'bullish',
+    reason: 'Nifty abhi 200-day MA ke upar trade kar raha hai. FII buying strong hai aur earnings season positive raha. SIP ke liye ideal time.',
+    change: '+1.2%', target: '₹25,800', horizon: '3-6 months', icon_bg: '#1e40af'
+  },
+  {
+    icon: '🥇', name: 'Gold ETF', type: 'COMMODITY',
+    signal: 'BUY', conf: '79% confidence', sentiment: 'bullish',
+    reason: 'Global uncertainty aur dollar weakness ke wajah se gold demand strong hai. Portfolio mein 10-15% allocation recommended.',
+    change: '+0.8%', target: '₹7,200/gm', horizon: '6-12 months', icon_bg: '#92400e'
+  },
+  {
+    icon: '₿', name: 'Bitcoin (BTC)', type: 'CRYPTO',
+    signal: 'HOLD', conf: '61% confidence', sentiment: 'neutral',
+    reason: 'BTC abhi consolidation phase mein hai. Agar aapke paas already hai to hold karein, naya investment thoda wait karein.',
+    change: '-2.1%', target: '$72,000', horizon: '3 months', icon_bg: '#78350f'
+  },
+  {
+    icon: '🏢', name: 'HDFC Bank', type: 'LARGE CAP',
+    signal: 'BUY', conf: '76% confidence', sentiment: 'bullish',
+    reason: 'NIM recovery on track, Q4 results beat expectations. Valuations reasonable at 2.1x book. Long term holds value.',
+    change: '+0.5%', target: '₹1,950', horizon: '6-12 months', icon_bg: '#1e3a5f'
+  },
+  {
+    icon: '🏠', name: 'Real Estate FD', type: 'FIXED DEPOSIT',
+    signal: 'HOLD', conf: '70% confidence', sentiment: 'neutral',
+    reason: 'RBI rate cut expectations ke saath FD rates peak pe hain. Lock in 7.5%+ rates abhi, kyunki agle 6 months mein rates girenge.',
+    change: '7.5% p.a.', target: '₹100 → ₹107.5', horizon: '1 year', icon_bg: '#064e3b'
+  },
+  {
+    icon: '🌐', name: 'US Tech ETF', type: 'GLOBAL',
+    signal: 'BUY', conf: '68% confidence', sentiment: 'bullish',
+    reason: 'AI boom ne US tech stocks ko boost kiya hai. INR hedging ke saath international diversification smart move hai.',
+    change: '+3.2%', target: 'N/A', horizon: '12-24 months', icon_bg: '#312e81'
+  }
+];
+
+const signalColors = { BUY: 'buy', SELL: 'sell', HOLD: 'hold' };
+
+const grid = document.getElementById('recGrid');
+grid.innerHTML = recommendations.map(r => `
+  <div class="rec-card ${r.sentiment}">
+    <div class="rec-header">
+      <div class="rec-asset">
+        <div class="asset-icon" style="background:${r.icon_bg}20;border:1px solid ${r.icon_bg}40;">${r.icon}</div>
+        <div>
+          <div class="asset-name">${r.name}</div>
+          <div class="asset-type">${r.type}</div>
+        </div>
+      </div>
+      <div class="rec-signal">
+        <div class="signal-label ${signalColors[r.signal]}">${r.signal}</div>
+        <div class="signal-conf">${r.conf}</div>
+      </div>
+    </div>
+    <p class="rec-reason">${r.reason}</p>
+    <div class="rec-stats">
+      <div class="stat">
+        <div class="stat-val ${r.change.startsWith('+') ? 'up' : r.change.startsWith('-') ? 'down' : ''}">${r.change}</div>
+        <div class="stat-key">Today</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val">${r.target}</div>
+        <div class="stat-key">Target</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val">${r.horizon}</div>
+        <div class="stat-key">Horizon</div>
+      </div>
+    </div>
+  </div>
+`).join('');
+</script>
+</body>
+</html>
