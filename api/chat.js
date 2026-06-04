@@ -31,7 +31,7 @@ export default async function handler(req, res) {
         'X-Title': 'InvestRight AI'
       },
       body: JSON.stringify({
-        model: 'meta-llama/llama-3.1-8b-instruct:free',
+        model: 'openrouter/auto',
         messages: messages,
         max_tokens: max_tokens || 1024,
         temperature: 0.7
