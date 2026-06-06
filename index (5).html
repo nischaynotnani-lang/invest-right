@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InvestRight — India's Smartest Investment Guide</title>
+  <meta name="description" content="Jaise Google Maps best route deta hai, InvestRight aapko best investment batata hai. Stocks, FD, Gold, Mutual Funds, Crypto — sab ek jagah, simple Hinglish mein." />
+  <meta name="keywords" content="investment advisor india, mutual funds hindi, FD vs stocks, best investment 2025, hinglish investment guide, SIP calculator" />
+  <meta name="google-site-verification" content="kVfag7KrBf8sVlVHb8ygI9wn-V6fwy1lf7sPGZmYAk0" />
+  <meta property="og:title" content="InvestRight — India's Smartest Investment Guide" />
+  <meta property="og:description" content="AI-powered investment advisor for tier-2, tier-3 India. Simple Hinglish mein best investment batata hai." />
+  <meta property="og:url" content="https://myinvestright.vercel.app" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="canonical" href="https://myinvestright.vercel.app" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0f1a;
+      --surface: #111827;
+      --surface2: #1a2236;
+      --border: #1f2d45;
+      --accent: #00d4aa;
+      --accent2: #7c3aed;
+      --accent3: #f59e0b;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --radius: 16px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* BG GRID */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,170,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,170,0.03) 1px, transparent 1px);
+      background-size: 44px 44px;
+      pointer-events: none; z-index: 0;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10,15,26,0.88);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px; height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800; font-size: 1.25rem;
+      color: var(--accent); text-decoration: none; letter-spacing: -0.5px;
+    }
+    .nav-logo span { color: var(--muted); font-weight: 400; }
+    .nav-links {
+      display: flex; gap: 4px; list-style: none; align-items: center;
+    }
+    .nav-links a {
+      color: var(--muted); text-decoration: none;
+      font-size: 0.85rem; padding: 7px 14px;
+      border-radius: 8px; transition: all 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); background: rgba(0,212,170,0.08); }
+    .nav-cta {
+      background: var(--accent); color: #0a0f1a !important;
+      font-weight: 700 !important; padding: 8px 18px !important;
+      border-radius: 8px !important;
+    }
+    .nav-cta:hover { opacity: 0.88; background: var(--accent) !important; }
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
+    .hamburger span { width: 22px; height: 2px; background: var(--text); border-radius: 2px; transition: all 0.3s; }
+    .mobile-menu {
+      display: none; position: fixed; top: 64px; left: 0; right: 0;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 16px 20px; flex-direction: column; gap: 4px; z-index: 99;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      color: var(--muted); text-decoration: none;
+      padding: 12px 16px; border-radius: 8px; font-size: 0.95rem;
+      transition: all 0.2s;
+    }
+    .mobile-menu a:hover { color: var(--accent); background: rgba(0,212,170,0.08); }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative; z-index: 1;
+      min-height: 92vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; padding: 80px 20px 60px;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(0,212,170,0.1); border: 1px solid rgba(0,212,170,0.25);
+      color: var(--accent); font-size: 0.78rem; font-weight: 500;
+      padding: 6px 16px; border-radius: 100px; margin-bottom: 28px;
+      letter-spacing: 0.5px;
+    }
+    .hero-badge .dot {
+      width: 6px; height: 6px; background: var(--accent);
+      border-radius: 50%; animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.7); }
+    }
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.2rem, 5.5vw, 4.2rem);
+      font-weight: 800; line-height: 1.12;
+      margin-bottom: 24px; letter-spacing: -1.5px; color: #fff;
+    }
+    .hero h1 .green { color: var(--accent); }
+    .hero h1 .purple { color: #a78bfa; }
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.15rem);
+      color: var(--muted); max-width: 560px;
+      line-height: 1.75; margin-bottom: 44px;
+    }
+
+    /* HERO BUTTONS */
+    .hero-btns {
+      display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;
+      margin-bottom: 60px;
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--accent); color: #0a0f1a;
+      font-family: 'Syne', sans-serif; font-weight: 700;
+      font-size: 1rem; padding: 14px 28px;
+      border-radius: 10px; text-decoration: none;
+      transition: all 0.2s; border: none; cursor: pointer;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,212,170,0.3); }
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: transparent; color: var(--text);
+      font-family: 'Syne', sans-serif; font-weight: 600;
+      font-size: 1rem; padding: 14px 28px;
+      border-radius: 10px; text-decoration: none;
+      border: 1px solid var(--border); transition: all 0.2s;
+    }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* HERO STATS */
+    .hero-stats {
+      display: flex; gap: 0; border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden; background: var(--surface);
+    }
+    .stat {
+      padding: 20px 32px; text-align: center;
+      border-right: 1px solid var(--border);
+    }
+    .stat:last-child { border-right: none; }
+    .stat-num { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; color: #fff; }
+    .stat-label { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
+
+    /* ── FEATURE NAV CARDS ── */
+    .feature-nav {
+      position: relative; z-index: 1;
+      padding: 0 40px 80px;
+    }
+    .feature-nav-inner {
+      max-width: 1100px; margin: 0 auto;
+    }
+    .section-label {
+      text-align: center; font-size: 0.75rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 2px;
+      color: var(--accent); margin-bottom: 14px;
+    }
+    .section-title {
+      font-family: 'Syne', sans-serif; font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 800; text-align: center; color: #fff;
+      margin-bottom: 48px; letter-spacing: -0.5px;
+    }
+    .section-title em { color: var(--accent); font-style: normal; }
+
+    .nav-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .nav-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 28px;
+      text-decoration: none; color: var(--text);
+      transition: all 0.25s; position: relative; overflow: hidden;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .nav-card::after {
+      content: ''; position: absolute;
+      bottom: 0; left: 0; right: 0; height: 3px;
+      border-radius: 0 0 var(--radius) var(--radius);
+      opacity: 0; transition: opacity 0.25s;
+    }
+    .nav-card:hover { transform: translateY(-4px); border-color: rgba(0,212,170,0.3); }
+    .nav-card:hover::after { opacity: 1; }
+    .nav-card.green::after { background: var(--accent); }
+    .nav-card.purple::after { background: var(--accent2); }
+    .nav-card.orange::after { background: var(--accent3); }
+    .nav-card.blue::after { background: #38bdf8; }
+    .nav-card.pink::after { background: #f472b6; }
+
+    .card-icon { font-size: 2rem; }
+    .card-top { display: flex; justify-content: space-between; align-items: flex-start; }
+    .card-badge {
+      font-size: 0.65rem; font-weight: 600; padding: 3px 9px;
+      border-radius: 100px; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .badge-live { background: rgba(0,212,170,0.15); color: var(--accent); }
+    .badge-new { background: rgba(124,58,237,0.15); color: #a78bfa; }
+    .badge-free { background: rgba(245,158,11,0.15); color: var(--accent3); }
+
+    .nav-card h3 {
+      font-family: 'Syne', sans-serif; font-size: 1.1rem;
+      font-weight: 700; color: #fff;
+    }
+    .nav-card p { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+    .card-arrow {
+      margin-top: auto; padding-top: 12px;
+      font-size: 0.82rem; color: var(--accent);
+      font-weight: 600; display: flex; align-items: center; gap: 6px;
+      transition: gap 0.2s;
+    }
+    .nav-card:hover .card-arrow { gap: 10px; }
+
+    /* ── HOW IT WORKS ── */
+    .how-section {
+      position: relative; z-index: 1;
+      padding: 80px 40px;
+      background: linear-gradient(180deg, transparent, rgba(0,212,170,0.03), transparent);
+    }
+    .how-inner { max-width: 900px; margin: 0 auto; }
+    .steps {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 0; margin-top: 48px;
+      border: 1px solid var(--border); border-radius: var(--radius);
+      overflow: hidden; background: var(--surface);
+    }
+    .step {
+      padding: 36px 28px;
+      border-right: 1px solid var(--border);
+    }
+    .step:last-child { border-right: none; }
+    .step-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 3rem; font-weight: 900;
+      color: rgba(0,212,170,0.12); line-height: 1; margin-bottom: 16px;
+    }
+    .step h3 { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 8px; }
+    .step p { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+
+    /* ── PROBLEM SECTION ── */
+    .problem-section {
+      position: relative; z-index: 1;
+      padding: 80px 40px;
+    }
+    .problem-inner { max-width: 1000px; margin: 0 auto; }
+    .app-pills {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      margin-top: 40px; justify-content: center;
+    }
+    .app-pill {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 100px; padding: 10px 20px;
+      font-size: 0.88rem; color: var(--muted);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .vs-arrow {
+      text-align: center; margin-top: 48px;
+      font-size: 1rem; color: var(--muted);
+    }
+    .vs-arrow strong { color: var(--accent); font-family: 'Syne', sans-serif; font-size: 1.4rem; display: block; margin-top: 12px; }
+
+    /* ── CTA STRIP ── */
+    .cta-strip {
+      position: relative; z-index: 1;
+      padding: 80px 40px;
+    }
+    .cta-inner {
+      max-width: 700px; margin: 0 auto; text-align: center;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 24px; padding: 60px 40px;
+      position: relative; overflow: hidden;
+    }
+    .cta-inner::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3));
+    }
+    .cta-inner h2 { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: #fff; margin-bottom: 12px; }
+    .cta-inner p { color: var(--muted); margin-bottom: 32px; font-size: 0.95rem; }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative; z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 32px 40px;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 16px;
+    }
+    .footer-logo { font-family: 'Syne', sans-serif; font-weight: 800; color: var(--accent); }
+    .footer-links { display: flex; gap: 20px; }
+    .footer-links a { color: var(--muted); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--accent); }
+    .footer-copy { color: var(--muted); font-size: 0.8rem; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 0 20px; }
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      .hero { padding: 60px 20px 40px; }
+      .hero-stats { flex-direction: column; border: none; gap: 0; }
+      .stat { border-right: none; border-bottom: 1px solid var(--border); padding: 16px 24px; }
+      .stat:last-child { border-bottom: none; }
+      .feature-nav { padding: 0 20px 60px; }
+      .how-section, .problem-section, .cta-strip { padding: 60px 20px; }
+      .steps { grid-template-columns: 1fr; }
+      .step { border-right: none; border-bottom: 1px solid var(--border); }
+      .step:last-child { border-bottom: none; }
+      footer { padding: 24px 20px; flex-direction: column; text-align: center; }
+      .footer-links { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">Invest<span>Right</span></a>
+  <ul class="nav-links">
+    <li><a href="dashboard.html">🧠 AI Dashboard</a></li>
+    <li><a href="market.html">📊 Markets</a></li>
+    <li><a href="portfolio.html">💼 Portfolio</a></li>
+    <li><a href="chat.html">💬 AI Chat</a></li>
+    <li><a href="premium.html">⭐ Premium</a></li>
+    <li><a href="chat.html" class="nav-cta">Try Free →</a></li>
+  </ul>
+  <div class="hamburger" onclick="toggleMenu()" id="hamburger">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="dashboard.html">🧠 AI Dashboard</a>
+  <a href="market.html">📊 Live Markets</a>
+  <a href="portfolio.html">💼 Portfolio Tracker</a>
+  <a href="chat.html">💬 Hinglish AI Chat</a>
+  <a href="premium.html">⭐ Premium</a>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">
+    <span class="dot"></span>
+    AI Powered · Free · Hinglish
+  </div>
+  <h1>
+    Invest smart.<br/>
+    <span class="green">No confusion.</span><br/>
+    <span class="purple">Ek platform.</span>
+  </h1>
+  <p class="hero-sub">
+    Jaise Google Maps best route deta hai — InvestRight aapko best investment option batata hai. Stocks, FD, Gold, Mutual Funds, Crypto — sab ek jagah, simple Hinglish mein.
+  </p>
+  <div class="hero-btns">
+    <a href="dashboard.html" class="btn-primary">
+      🤖 AI Se Poocho — Free
+    </a>
+    <a href="market.html" class="btn-secondary">
+      📊 Live Markets Dekho
+    </a>
+  </div>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">6+</div>
+      <div class="stat-label">Asset classes</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">₹0</div>
+      <div class="stat-label">Cost forever</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">Hinglish</div>
+      <div class="stat-label">Simple language</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">AI</div>
+      <div class="stat-label">NVIDIA powered</div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURE NAV CARDS -->
+<div class="feature-nav">
+  <div class="feature-nav-inner">
+    <div class="section-label">Platform</div>
+    <h2 class="section-title">Sab kuch <em>ek jagah</em></h2>
+    <div class="nav-cards">
+
+      <a href="dashboard.html" class="nav-card green">
+        <div class="card-top">
+          <span class="card-icon">🤖</span>
+          <span class="card-badge badge-live">Live</span>
+        </div>
+        <h3>AI Dashboard</h3>
+        <p>Amount, time aur risk batao — AI instantly best investment options recommend karta hai. FD vs MF vs Gold vs Stocks comparison bhi.</p>
+        <div class="card-arrow">Open Dashboard →</div>
+      </a>
+
+      <a href="chat.html" class="nav-card purple">
+        <div class="card-top">
+          <span class="card-icon">💬</span>
+          <span class="card-badge badge-live">Live</span>
+        </div>
+        <h3>Hinglish AI Chat</h3>
+        <p>Apna koi bhi investment sawaal poocho — Hinglish mein jawab milega. "Mujhe 5 saal mein 10 lakh chahiye, kya karoon?"</p>
+        <div class="card-arrow">Chat Karo →</div>
+      </a>
+
+      <a href="market.html" class="nav-card orange">
+        <div class="card-top">
+          <span class="card-icon">📊</span>
+          <span class="card-badge badge-live">Live</span>
+        </div>
+        <h3>Live Markets</h3>
+        <p>Sensex, Nifty, Gold, Crypto, US Markets — sab ek jagah dekho. Top gainers, losers, sector performance.</p>
+        <div class="card-arrow">Markets Dekho →</div>
+      </a>
+
+      <a href="portfolio.html" class="nav-card blue">
+        <div class="card-top">
+          <span class="card-icon">💼</span>
+          <span class="card-badge badge-free">Free</span>
+        </div>
+        <h3>Portfolio Tracker</h3>
+        <p>Apna existing portfolio add karo — total value, profit/loss, asset allocation sab ek jagah track karo.</p>
+        <div class="card-arrow">Track Portfolio →</div>
+      </a>
+
+      <a href="premium.html" class="nav-card pink">
+        <div class="card-top">
+          <span class="card-icon">⭐</span>
+          <span class="card-badge badge-new">Soon</span>
+        </div>
+        <h3>Premium Plan</h3>
+        <p>Unlimited AI recommendations, priority alerts, SEBI advisor connect, aur bohot kuch. ₹199/month se.</p>
+        <div class="card-arrow">Plans Dekho →</div>
+      </a>
+
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="how-section">
+  <div class="how-inner">
+    <div class="section-label" style="text-align:center">How it works</div>
+    <h2 class="section-title">3 steps. <em>Bas itna.</em></h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <h3>💰 Kitna paisa?</h3>
+        <p>Amount enter karo — ₹1,000 se lekar ₹1 Crore tak kuch bhi. SIP ya lump sum.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <h3>⏳ Kitne time ke liye?</h3>
+        <p>3 mahine, 1 saal, 5 saal, 10 saal — apna goal batao.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <h3>⚡ Kitna risk?</h3>
+        <p>Safe, Moderate, ya Aggressive — AI tumhare hisaab se best option recommend karta hai.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROBLEM SECTION -->
+<div class="problem-section">
+  <div class="problem-inner">
+    <div class="section-label" style="text-align:center">The problem</div>
+    <h2 class="section-title" style="text-align:center">Invest karna chahte ho? <em>6 alag apps kholo.</em></h2>
+    <div class="app-pills">
+      <div class="app-pill">📈 Stocks app alag</div>
+      <div class="app-pill">🏦 FD ke liye bank site</div>
+      <div class="app-pill">💼 Mutual funds app alag</div>
+      <div class="app-pill">₿ Crypto app alag</div>
+      <div class="app-pill">🥇 Gold price alag jagah</div>
+      <div class="app-pill">🌍 US stocks alag app</div>
+    </div>
+    <div class="vs-arrow">
+      Aur in sab mein se koi nahi batata — <em>"Bhai, tere paas ₹50,000 hain, ACTUALLY kahan lagao?"</em>
+      <strong>InvestRight yahi karta hai. ↓</strong>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="cta-strip">
+  <div class="cta-inner">
+    <h2>Abhi try karo — Free hai</h2>
+    <p>Koi signup nahi. Koi credit card nahi. Bas amount, time aur risk batao — AI bata dega.</p>
+    <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+      <a href="dashboard.html" class="btn-primary">🤖 AI Dashboard Kholo</a>
+      <a href="chat.html" class="btn-secondary">💬 Chat Karo</a>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">InvestRight ⚡</div>
+  <div class="footer-links">
+    <a href="dashboard.html">AI Dashboard</a>
+    <a href="market.html">Markets</a>
+    <a href="portfolio.html">Portfolio</a>
+    <a href="chat.html">AI Chat</a>
+    <a href="premium.html">Premium</a>
+  </div>
+  <div class="footer-copy">© 2026 InvestRight · Made in India 🇮🇳 · Educational platform, not SEBI advice</div>
+</footer>
+
+<script>
+  function toggleMenu() {
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.toggle('open');
+  }
+  // Close mobile menu on link click
+  document.querySelectorAll('.mobile-menu a').forEach(a => {
+    a.addEventListener('click', () => document.getElementById('mobileMenu').classList.remove('open'));
+  });
+</script>
+
+<script src="bg-animation.js"></script>
+</body>
+</html>
