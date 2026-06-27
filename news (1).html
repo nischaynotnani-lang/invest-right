@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Market News — InvestRight</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0f1a;
+      --bg2: #0d1526;
+      --surface: rgba(255,255,255,0.04);
+      --surface-hover: rgba(255,255,255,0.07);
+      --border: rgba(255,255,255,0.08);
+      --green: #00c896;
+      --green-dim: rgba(0,200,150,0.12);
+      --green-glow: rgba(0,200,150,0.25);
+      --red: #ff4d6a;
+      --red-dim: rgba(255,77,106,0.12);
+      --yellow: #f5c842;
+      --yellow-dim: rgba(245,200,66,0.12);
+      --text: #e8edf5;
+      --text-muted: rgba(232,237,245,0.5);
+      --text-dim: rgba(232,237,245,0.3);
+      --font: 'Space Grotesk', sans-serif;
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Ambient bg glow */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 500px;
+      background: radial-gradient(ellipse, rgba(0,200,150,0.06) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* NAV */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      height: 60px;
+      background: rgba(10,15,26,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--green);
+      text-decoration: none;
+      letter-spacing: -0.3px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 6px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 6px 14px;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--text); background: var(--surface); }
+    .nav-links a.active { color: var(--green); background: var(--green-dim); }
+
+    /* HEADER */
+    .page-header {
+      position: relative;
+      z-index: 1;
+      padding: 48px 32px 32px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .page-header h1 {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.8px;
+      margin-bottom: 8px;
+    }
+
+    .page-header h1 span { color: var(--green); }
+
+    .page-header p {
+      color: var(--text-muted);
+      font-size: 15px;
+      font-weight: 400;
+    }
+
+    /* FILTER TABS */
+    .filter-row {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      gap: 8px;
+      padding: 0 32px 28px;
+      max-width: 1100px;
+      margin: 0 auto;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: 7px 16px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-muted);
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-btn:hover { border-color: rgba(0,200,150,0.3); color: var(--text); }
+    .filter-btn.active { background: var(--green-dim); border-color: rgba(0,200,150,0.4); color: var(--green); }
+
+    /* GRID */
+    .news-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 20px;
+      padding: 0 32px 60px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* NEWS CARD */
+    .news-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: all 0.25s;
+      cursor: default;
+    }
+
+    .news-card:hover {
+      background: var(--surface-hover);
+      border-color: rgba(255,255,255,0.13);
+      transform: translateY(-2px);
+    }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .card-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+
+    .tag-markets { background: var(--green-dim); color: var(--green); border: 1px solid rgba(0,200,150,0.2); }
+    .tag-economy { background: var(--yellow-dim); color: var(--yellow); border: 1px solid rgba(245,200,66,0.2); }
+    .tag-banking { background: rgba(100,150,255,0.12); color: #7ea8ff; border: 1px solid rgba(100,150,255,0.2); }
+    .tag-crypto { background: rgba(255,160,50,0.12); color: #ffa032; border: 1px solid rgba(255,160,50,0.2); }
+    .tag-rbi { background: var(--red-dim); color: var(--red); border: 1px solid rgba(255,77,106,0.2); }
+    .tag-global { background: rgba(180,100,255,0.12); color: #c084fc; border: 1px solid rgba(180,100,255,0.2); }
+
+    .card-time {
+      color: var(--text-dim);
+      font-size: 12px;
+      white-space: nowrap;
+      margin-top: 2px;
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.45;
+      color: var(--text);
+    }
+
+    .card-source {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    /* IMPACT BOX — appears after AI click */
+    .impact-box {
+      background: rgba(0,200,150,0.06);
+      border: 1px solid rgba(0,200,150,0.18);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .impact-box.visible { display: flex; }
+
+    .impact-header {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--green);
+      letter-spacing: 0.2px;
+    }
+
+    .impact-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      flex-shrink: 0;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    .impact-text {
+      font-size: 13.5px;
+      line-height: 1.6;
+      color: var(--text);
+    }
+
+    /* Impact chips */
+    .impact-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .chip {
+      padding: 3px 10px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .chip-up { background: var(--green-dim); color: var(--green); }
+    .chip-down { background: var(--red-dim); color: var(--red); }
+    .chip-neutral { background: var(--yellow-dim); color: var(--yellow); }
+
+    /* CTA BUTTON */
+    .impact-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(0,200,150,0.3);
+      background: var(--green-dim);
+      color: var(--green);
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: fit-content;
+    }
+
+    .impact-btn:hover { background: rgba(0,200,150,0.2); border-color: rgba(0,200,150,0.5); }
+    .impact-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .impact-btn svg { flex-shrink: 0; }
+
+    .read-more {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 500;
+      margin-top: 2px;
+      transition: color 0.2s;
+    }
+    .read-more:hover { color: var(--text-muted); }
+
+    /* LOADING STATE */
+    .skeleton {
+      background: linear-gradient(90deg, var(--surface) 25%, rgba(255,255,255,0.06) 50%, var(--surface) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 8px;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    .skeleton-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .sk-tag { width: 70px; height: 22px; }
+    .sk-title { width: 100%; height: 16px; }
+    .sk-title-2 { width: 75%; height: 16px; }
+    .sk-source { width: 100px; height: 12px; }
+
+    /* ERROR STATE */
+    .error-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+    }
+
+    .error-state .icon { font-size: 40px; margin-bottom: 16px; }
+    .error-state h3 { font-size: 18px; font-weight: 600; margin-bottom: 8px; color: var(--text); }
+    .error-state p { font-size: 14px; line-height: 1.6; }
+
+    /* LIVE BADGE */
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 100px;
+      background: var(--red-dim);
+      border: 1px solid rgba(255,77,106,0.2);
+      color: var(--red);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .live-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--red);
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+
+    /* REFRESH BTN */
+    .refresh-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 16px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .refresh-btn:hover { background: var(--surface); color: var(--text); }
+    .refresh-btn.spinning svg { animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .header-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    @media (max-width: 640px) {
+      nav { padding: 0 16px; }
+      .page-header, .filter-row { padding-left: 16px; padding-right: 16px; }
+      .news-grid { padding: 0 16px 60px; grid-template-columns: 1fr; }
+      .page-header h1 { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a class="nav-logo" href="index.html">InvestRight</a>
+    <ul class="nav-links">
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="market.html">Markets</a></li>
+      <li><a href="news.html" class="active">News</a></li>
+      <li><a href="chat.html">AI Chat</a></li>
+      <li><a href="portfolio.html">Portfolio</a></li>
+    </ul>
+  </nav>
+
+  <div class="page-header">
+    <h1>Market <span>News Impact</span></h1>
+    <p>Live financial news — AI batayega iska tera portfolio pe kya asar padega</p>
+    <div class="header-row">
+      <span class="live-badge"><span class="live-dot"></span>Live</span>
+      <button class="refresh-btn" id="refreshBtn" onclick="loadNews()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+        </svg>
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <div class="filter-row" id="filterRow">
+    <button class="filter-btn active" data-filter="all">Sab kuch</button>
+    <button class="filter-btn" data-filter="markets">Markets</button>
+    <button class="filter-btn" data-filter="economy">Economy</button>
+    <button class="filter-btn" data-filter="banking">Banking</button>
+    <button class="filter-btn" data-filter="rbi">RBI</button>
+    <button class="filter-btn" data-filter="crypto">Crypto</button>
+    <button class="filter-btn" data-filter="global">Global</button>
+  </div>
+
+  <div class="news-grid" id="newsGrid">
+    <!-- skeleton loading -->
+    ${[1,2,3,4,5,6].map(() => `
+    <div class="skeleton-card">
+      <div class="skeleton sk-tag"></div>
+      <div class="skeleton sk-title"></div>
+      <div class="skeleton sk-title-2"></div>
+      <div class="skeleton sk-source"></div>
+    </div>`).join('')}
+  </div>
+
+  <script>
+    // ─── State ───────────────────────────────────────────────
+    let allArticles = [];
+    let activeFilter = 'all';
+
+    // ─── Category Detection ──────────────────────────────────
+    function detectCategory(title, description) {
+      const text = (title + ' ' + (description || '')).toLowerCase();
+      if (/bitcoin|crypto|ethereum|blockchain|web3|nft/i.test(text)) return 'crypto';
+      if (/rbi|reserve bank|repo rate|monetary policy|inflation|cpi/i.test(text)) return 'rbi';
+      if (/bank|nbfc|hdfc|sbi|icici|kotak|axis/i.test(text)) return 'banking';
+      if (/nifty|sensex|bse|nse|stocks?|equity|ipo|share market/i.test(text)) return 'markets';
+      if (/fed|dollar|global|us market|china|europe|nasdaq|s&p/i.test(text)) return 'global';
+      if (/gdp|budget|economy|rupee|export|import|fiscal|trade/i.test(text)) return 'economy';
+      return 'markets'; // default
+    }
+
+    const catMeta = {
+      markets:  { label: 'Markets',  cls: 'tag-markets',  icon: '📈' },
+      economy:  { label: 'Economy',  cls: 'tag-economy',  icon: '🏛️' },
+      banking:  { label: 'Banking',  cls: 'tag-banking',  icon: '🏦' },
+      crypto:   { label: 'Crypto',   cls: 'tag-crypto',   icon: '₿'  },
+      rbi:      { label: 'RBI',      cls: 'tag-rbi',      icon: '⚖️' },
+      global:   { label: 'Global',   cls: 'tag-global',   icon: '🌍' },
+    };
+
+    // ─── Time Format ─────────────────────────────────────────
+    function timeAgo(dateStr) {
+      const diff = Date.now() - new Date(dateStr).getTime();
+      const m = Math.floor(diff / 60000);
+      if (m < 1)  return 'Abhi abhi';
+      if (m < 60) return m + ' min pehle';
+      const h = Math.floor(m / 60);
+      if (h < 24) return h + ' ghante pehle';
+      return Math.floor(h / 24) + ' din pehle';
+    }
+
+    // ─── Fetch News ──────────────────────────────────────────
+    async function loadNews() {
+      const btn = document.getElementById('refreshBtn');
+      btn.classList.add('spinning');
+
+      try {
+        const res = await fetch('/api/news');
+        const data = await res.json();
+
+        if (data.error) throw new Error(data.error);
+
+        allArticles = (data.articles || [])
+          .filter(a => a.title && a.title !== '[Removed]')
+          .slice(0, 20)
+          .map(a => ({ ...a, category: detectCategory(a.title, a.description) }));
+
+        renderNews();
+      } catch (err) {
+        console.error(err);
+        document.getElementById('newsGrid').innerHTML = `
+          <div class="error-state">
+            <div class="icon">📡</div>
+            <h3>News load nahi hui</h3>
+            <p>Thoda wait karo aur refresh karo.<br>Ya phir AI Chat mein seedha pooch lo.</p>
+          </div>`;
+      } finally {
+        btn.classList.remove('spinning');
+      }
+    }
+
+    // ─── Render ───────────────────────────────────────────────
+    function renderNews() {
+      const filtered = activeFilter === 'all'
+        ? allArticles
+        : allArticles.filter(a => a.category === activeFilter);
+
+      const grid = document.getElementById('newsGrid');
+
+      if (!filtered.length) {
+        grid.innerHTML = `<div class="error-state"><div class="icon">🔍</div><h3>Koi news nahi mili</h3><p>Doosra filter try karo.</p></div>`;
+        return;
+      }
+
+      grid.innerHTML = filtered.map((article, idx) => {
+        const cat = catMeta[article.category] || catMeta.markets;
+        return `
+        <div class="news-card" data-idx="${idx}">
+          <div class="card-top">
+            <span class="card-tag ${cat.cls}">${cat.icon} ${cat.label}</span>
+            <span class="card-time">${timeAgo(article.publishedAt)}</span>
+          </div>
+          <div class="card-title">${escHtml(article.title)}</div>
+          <div class="card-source">${escHtml(article.source?.name || 'News')}</div>
+
+          <div class="impact-box" id="impact-${idx}">
+            <div class="impact-header">
+              <span class="impact-dot"></span>
+              AI Impact Analysis
+            </div>
+            <div class="impact-text" id="impact-text-${idx}"></div>
+            <div class="impact-chips" id="impact-chips-${idx}"></div>
+          </div>
+
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+            <button class="impact-btn" id="btn-${idx}" onclick="analyzeImpact(${idx})">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+              Mujhpe kya asar?
+            </button>
+            ${article.url ? `<a class="read-more" href="${article.url}" target="_blank" rel="noopener">Pura padho ↗</a>` : ''}
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    // ─── AI Analysis ─────────────────────────────────────────
+    async function analyzeImpact(idx) {
+      const article = (activeFilter === 'all' ? allArticles : allArticles.filter(a => a.category === activeFilter))[idx];
+      if (!article) return;
+
+      const btn = document.getElementById(`btn-${idx}`);
+      const box = document.getElementById(`impact-${idx}`);
+      const textEl = document.getElementById(`impact-text-${idx}`);
+      const chipsEl = document.getElementById(`impact-chips-${idx}`);
+
+      btn.disabled = true;
+      btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation:spin 1s linear infinite"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg> Soch raha hoon...`;
+      box.classList.add('visible');
+      textEl.textContent = '';
+      chipsEl.innerHTML = '';
+
+      try {
+        // Call our backend proxy — avoids CORS issues
+        const response = await fetch('/api/news-impact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: article.title,
+            description: article.description || '',
+            source: article.source?.name || 'Unknown'
+          })
+        });
+
+        const parsed = await response.json();
+
+        if (parsed.error) throw new Error(parsed.error);
+
+        // Render summary + advice
+        textEl.innerHTML = `
+          <strong style="color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Kya hua?</strong>
+          <br><br>${escHtml(parsed.summary)}<br><br>
+          <strong style="color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Kya karo?</strong>
+          <br><br>${escHtml(parsed.advice)}`;
+
+        // Render impact chips
+        if (parsed.impacts) {
+          chipsEl.innerHTML = parsed.impacts.map(imp => {
+            const arrow = imp.direction === 'up' ? '↑' : imp.direction === 'down' ? '↓' : '→';
+            const cls = imp.direction === 'up' ? 'chip-up' : imp.direction === 'down' ? 'chip-down' : 'chip-neutral';
+            return `<span class="chip ${cls}" title="${escHtml(imp.reason)}">${arrow} ${escHtml(imp.label)}</span>`;
+          }).join('');
+        }
+
+        btn.innerHTML = `✓ Analysis Done`;
+        btn.style.opacity = '0.6';
+
+      } catch (err) {
+        textEl.textContent = 'Kuch gadbad ho gayi. Dobara try karo.';
+        btn.disabled = false;
+        btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg> Dobara try karo`;
+      }
+    }
+
+    // ─── Filters ──────────────────────────────────────────────
+    document.getElementById('filterRow').addEventListener('click', e => {
+      const btn = e.target.closest('.filter-btn');
+      if (!btn) return;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeFilter = btn.dataset.filter;
+      renderNews();
+    });
+
+    // ─── Utils ───────────────────────────────────────────────
+    function escHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // ─── Init ────────────────────────────────────────────────
+    loadNews();
+  </script>
+</body>
+</html>
